@@ -1,0 +1,698 @@
+@startuml
+!pragma layout smetana
+skinparam Rectangle{
+	BorderColor White
+	shadowing false
+}
+
+package org.epam.shape.entity{
+package CustomPoint <<Rectangle>>{
+class CustomPoint{
+- static final Logger LOGGER
+~ double firstNumber
+~ double secondNumber
+
++ CustomPoint (double firstNumber,double secondNumber)
++ double getFirstNumber ()
++ double getSecondNumber ()
++ boolean equals (Object obj)
++ int hashCode ()
++ String toString ()
++ CustomPoint clone ()
+
+}
+}
+}
+package org.epam.shape.entity{
+package CustomTriangle <<Rectangle>>{
+class CustomTriangle{
+- static final Logger LOGGER
+~ long id
+- CustomPoint firstPoint
+- CustomPoint secondPoint
+- CustomPoint thirdPoint
+- final List<CustomTriangleObserver> observer
+
++ CustomTriangle (CustomPoint firstPoint,CustomPoint secondPoint,CustomPoint thirdPoint)
++ CustomPoint getFirstPoint ()
++ CustomPoint getSecondPoint ()
++ CustomPoint getThirdPoint ()
++ long getId ()
++ List<CustomTriangleObserver> getObserver ()
++ void setFirstPoint (CustomPoint firstPoint)
++ void setSecondPoint (CustomPoint secondPoint)
++ void setThirdPoint (CustomPoint thirdPoint)
++ void attach (CustomTriangleObserver triangleObserver)
++ void detach (CustomTriangleObserver triangleObserver)
++ void notifyObservers ()
++ boolean equals (Object obj)
++ int hashCode ()
++ String toString ()
+
+}
+}
+}
+package org.epam.shape.entity{
+package CustomTriangleProperties <<Rectangle>>{
+class CustomTriangleProperties{
+~ double area
+~ double perimeter
+
++ CustomTriangleProperties (double area,double perimeter)
++ void setPerimeter (double perimeter)
++ void setArea (double area)
++ double getPerimeter ()
++ double getArea ()
++ boolean equals (Object obj)
++ int hashCode ()
++ String toString ()
+
+}
+}
+}
+package org.epam.shape.exception{
+package CustomException <<Rectangle>>{
+class CustomException{
+
++ CustomException ()
++ CustomException (String message)
++ CustomException (String message,Throwable cause)
++ CustomException (Throwable cause)
+
+}
+}
+}
+package org.epam.shape.factory{
+package CustomTriangleFactory <<Rectangle>>{
+class CustomTriangleFactory{
+- static final Logger LOGGER
+~ int AMOUNT_OF_VALUES
+
++ CustomTriangle createCustomTriangle (CustomPoint firstPoint,CustomPoint secondPoint,CustomPoint thirdPoint)
++ CustomTriangle createCustomTriangle (double[] values)
+
+}
+}
+}
+package org.epam.shape.main{
+package Run <<Rectangle>>{
+class Run{
+
++ static void main (String[] args)
+
+}
+}
+}
+package org.epam.shape.observer{
+package CustomTriangleEvent <<Rectangle>>{
+class CustomTriangleEvent{
+
++ CustomTriangleEvent (Object source)
++ CustomTriangle getSource ()
+
+}
+}
+}
+package org.epam.shape.observer{
+package CustomTriangleObservable <<Rectangle>>{
+interface CustomTriangleObservable{
+
+~ void attach (CustomTriangleObserver observer)
+~ void detach (CustomTriangleObserver observer)
+~ void notifyObservers ()
+
+}
+}
+}
+package org.epam.shape.observer{
+package CustomTriangleObserver <<Rectangle>>{
+interface CustomTriangleObserver{
+
+~ void parameterChanged (CustomTriangleEvent event)
+
+}
+}
+}
+package org.epam.shape.observer.impl{
+package CustomTriangleObserverImpl <<Rectangle>>{
+class CustomTriangleObserverImpl{
+- static final Logger LOGGER
+
++ void parameterChanged (CustomTriangleEvent event)
+
+}
+}
+}
+package org.epam.shape.parser{
+package CustomTriangleParser <<Rectangle>>{
+class CustomTriangleParser{
+- static final Logger LOGGER
+~ int AMOUNT_OF_VALUES
+- static final String SEPARATOR
+
++ double[] parseStringToDoubleArray (List<String> listOfValues)
+
+}
+}
+}
+package org.epam.shape.reader{
+package CustomDataReader <<Rectangle>>{
+class CustomDataReader{
+- static final Logger LOGGER
+
++ CustomDataReader ()
++ List<String> readDataFromFile (String nameOfFile)
+
+}
+}
+}
+package org.epam.shape.repository{
+package CustomTriangleRepository <<Rectangle>>{
+interface CustomTriangleRepository{
+
+~ void add (CustomTriangle triangle)
+~ boolean remove (CustomTriangle figure)
+~ void clear ()
+~ CustomTriangle get (int index)
+~ CustomTriangle set (int index,CustomTriangle figure)
+~ List<CustomTriangle> query (FindSpecification specification)
+~ List<CustomTriangle> sort (Comparator<CustomTriangle> comparator)
+
+}
+}
+}
+package org.epam.shape.repository.impl{
+package CustomTriangleRepositoryImpl <<Rectangle>>{
+class CustomTriangleRepositoryImpl{
+- static final CustomTriangleRepository instance
+- final List<CustomTriangle> listOfTriangles
+
+- CustomTriangleRepositoryImpl ()
++ static CustomTriangleRepository getInstance ()
++ List<CustomTriangle> getListOfTriangles ()
++ void add (CustomTriangle triangle)
++ boolean remove (CustomTriangle triangle)
++ void clear ()
++ CustomTriangle get (int index)
++ CustomTriangle set (int index,CustomTriangle triangle)
++ List<CustomTriangle> query (FindSpecification specification)
++ List<CustomTriangle> sort (Comparator<CustomTriangle> comparator)
+
+}
+}
+}
+package org.epam.shape.service{
+package CustomTriangleService <<Rectangle>>{
+class CustomTriangleService{
+- static final Logger LOGGER
+
++ double getTrianglePerimeter (CustomTriangle triangle)
++ double getTriangleArea (CustomTriangle triangle)
++ boolean isTriangle (CustomTriangle triangle)
++ boolean isRectangularTriangle (CustomTriangle triangle)
++ boolean isIsoscelesTriangle (CustomTriangle triangle)
++ boolean isEquilateralTriangle (CustomTriangle triangle)
++ boolean isAcuteAngleTriangle (CustomTriangle triangle)
++ boolean isObtuseTriangle (CustomTriangle triangle)
+- double getSegmentLength (CustomPoint firstPoint,CustomPoint secondPoint)
+
+}
+}
+}
+package org.epam.shape.specification.find{
+package FindSpecification <<Rectangle>>{
+interface FindSpecification{
+
+~ boolean specified (CustomTriangle triangle)
+
+}
+}
+}
+package org.epam.shape.specification.find.impl{
+package FindSpecificationByArea <<Rectangle>>{
+class FindSpecificationByArea{
+- static Logger LOGGER
+~ double minimalArea
+~ double maximalArea
+
++ FindSpecificationByArea (double minimalArea,double maximalArea)
++ boolean specified (CustomTriangle triangle)
+
+}
+}
+}
+package org.epam.shape.specification.find.impl{
+package FindSpecificationById <<Rectangle>>{
+class FindSpecificationById{
+- static final Logger LOGGER
+~ long id
+
++ FindSpecificationById (long id)
++ boolean specified (CustomTriangle triangle)
+
+}
+}
+}
+package org.epam.shape.specification.find.impl{
+package FindSpecificationByPerimeter <<Rectangle>>{
+class FindSpecificationByPerimeter{
+- static Logger LOGGER
+~ double minimalPerimeter
+~ double maximalPerimeter
+
++ FindSpecificationByPerimeter (double minPerimeter,double maxPerimeter)
++ boolean specified (CustomTriangle triangle)
+
+}
+}
+}
+package org.epam.shape.specification.sort{
+package SortSpecificationByArea <<Rectangle>>{
+class SortSpecificationByArea{
+- static final Logger LOGGER
+
++ int compare (CustomTriangle firstTriangle,CustomTriangle secondTriangle)
+
+}
+}
+}
+package org.epam.shape.specification.sort{
+package SortSpecificationById <<Rectangle>>{
+class SortSpecificationById{
+- static final Logger LOGGER
+
++ int compare (CustomTriangle firstTriangle,CustomTriangle secondTriangle)
+
+}
+}
+}
+package org.epam.shape.specification.sort{
+package SortSpecificationByPerimeter <<Rectangle>>{
+class SortSpecificationByPerimeter{
+- static final Logger LOGGER
+
++ int compare (CustomTriangle firstTriangle,CustomTriangle secondTriangle)
+
+}
+}
+}
+package org.epam.shape.util{
+package IdGenerator <<Rectangle>>{
+class IdGenerator{
+~ long currentId
+
++ static long generateId ()
+
+}
+}
+}
+package org.epam.shape.validator{
+package CustomTriangleValidator <<Rectangle>>{
+class CustomTriangleValidator{
+- static final Logger LOGGER
+- static final String SEPARATOR
+
++ static boolean isDoubleValue (String value)
++ static boolean isListCorrect (List<String> listOfStrings)
++ static boolean isDoublesValues (String line)
+
+}
+}
+}
+package org.epam.shape.warehouse{
+package CustomTriangleWarehouse <<Rectangle>>{
+class CustomTriangleWarehouse{
+- static final Logger LOGGER
+- static final CustomTriangleWarehouse instance
+- final Map<Long,CustomTriangleProperties> trianglePropertiesMap
+
++ static CustomTriangleWarehouse getInstance ()
++ void setProperty (long id,CustomTriangleProperties newProperties)
++ CustomTriangleProperties getProperty (long id)
++ void updateProperties (long id,CustomTriangleProperties newProperties)
+
+}
+}
+}
+Cloneable --> CustomPoint : implements↑
+CustomTriangleObservable --> CustomTriangle : implements↑
+Exception --> CustomException : extends↑
+EventObject --> CustomTriangleEvent : extends↑
+CustomTriangleObserver --> CustomTriangleObserverImpl : implements↑
+CustomTriangleRepository --> CustomTriangleRepositoryImpl : implements↑
+FindSpecification --> FindSpecificationByArea : implements↑
+FindSpecification --> FindSpecificationById : implements↑
+FindSpecification --> FindSpecificationByPerimeter : implements↑
+Comparator --> SortSpecificationByArea : implements↑
+Comparator --> SortSpecificationById : implements↑
+Comparator --> SortSpecificationByPerimeter : implements↑
+@startuml
+!pragma layout smetana
+skinparam Rectangle{
+	BorderColor White
+	shadowing false
+}
+
+package org.epam.shape.entity{
+package CustomPoint <<Rectangle>>{
+class CustomPoint{
+- static final Logger LOGGER
+~ double firstNumber
+~ double secondNumber
+
++ CustomPoint (double firstNumber,double secondNumber)
++ double getFirstNumber ()
++ double getSecondNumber ()
++ boolean equals (Object obj)
++ int hashCode ()
++ String toString ()
++ CustomPoint clone ()
+
+}
+}
+}
+package org.epam.shape.entity{
+package CustomTriangle <<Rectangle>>{
+class CustomTriangle{
+- static final Logger LOGGER
+~ long id
+- CustomPoint firstPoint
+- CustomPoint secondPoint
+- CustomPoint thirdPoint
+- final List<CustomTriangleObserver> observer
+
++ CustomTriangle (CustomPoint firstPoint,CustomPoint secondPoint,CustomPoint thirdPoint)
++ CustomPoint getFirstPoint ()
++ CustomPoint getSecondPoint ()
++ CustomPoint getThirdPoint ()
++ long getId ()
++ List<CustomTriangleObserver> getObserver ()
++ void setFirstPoint (CustomPoint firstPoint)
++ void setSecondPoint (CustomPoint secondPoint)
++ void setThirdPoint (CustomPoint thirdPoint)
++ void attach (CustomTriangleObserver triangleObserver)
++ void detach (CustomTriangleObserver triangleObserver)
++ void notifyObservers ()
++ boolean equals (Object obj)
++ int hashCode ()
++ String toString ()
+
+}
+}
+}
+package org.epam.shape.entity{
+package CustomTriangleProperties <<Rectangle>>{
+class CustomTriangleProperties{
+~ double area
+~ double perimeter
+
++ CustomTriangleProperties (double area,double perimeter)
++ void setPerimeter (double perimeter)
++ void setArea (double area)
++ double getPerimeter ()
++ double getArea ()
++ boolean equals (Object obj)
++ int hashCode ()
++ String toString ()
+
+}
+}
+}
+package org.epam.shape.exception{
+package CustomException <<Rectangle>>{
+class CustomException{
+
++ CustomException ()
++ CustomException (String message)
++ CustomException (String message,Throwable cause)
++ CustomException (Throwable cause)
+
+}
+}
+}
+package org.epam.shape.factory{
+package CustomTriangleFactory <<Rectangle>>{
+class CustomTriangleFactory{
+- static final Logger LOGGER
+~ int AMOUNT_OF_VALUES
+
++ CustomTriangle createCustomTriangle (CustomPoint firstPoint,CustomPoint secondPoint,CustomPoint thirdPoint)
++ CustomTriangle createCustomTriangle (double[] values)
+
+}
+}
+}
+package org.epam.shape.main{
+package Run <<Rectangle>>{
+class Run{
+
++ static void main (String[] args)
+
+}
+}
+}
+package org.epam.shape.observer{
+package CustomTriangleEvent <<Rectangle>>{
+class CustomTriangleEvent{
+
++ CustomTriangleEvent (Object source)
++ CustomTriangle getSource ()
+
+}
+}
+}
+package org.epam.shape.observer{
+package CustomTriangleObservable <<Rectangle>>{
+interface CustomTriangleObservable{
+
+~ void attach (CustomTriangleObserver observer)
+~ void detach (CustomTriangleObserver observer)
+~ void notifyObservers ()
+
+}
+}
+}
+package org.epam.shape.observer{
+package CustomTriangleObserver <<Rectangle>>{
+interface CustomTriangleObserver{
+
+~ void parameterChanged (CustomTriangleEvent event)
+
+}
+}
+}
+package org.epam.shape.observer.impl{
+package CustomTriangleObserverImpl <<Rectangle>>{
+class CustomTriangleObserverImpl{
+- static final Logger LOGGER
+
++ void parameterChanged (CustomTriangleEvent event)
+
+}
+}
+}
+package org.epam.shape.parser{
+package CustomTriangleParser <<Rectangle>>{
+class CustomTriangleParser{
+- static final Logger LOGGER
+~ int AMOUNT_OF_VALUES
+- static final String SEPARATOR
+
++ double[] parseStringToDoubleArray (List<String> listOfValues)
+
+}
+}
+}
+package org.epam.shape.reader{
+package CustomDataReader <<Rectangle>>{
+class CustomDataReader{
+- static final Logger LOGGER
+
++ CustomDataReader ()
++ List<String> readDataFromFile (String nameOfFile)
+
+}
+}
+}
+package org.epam.shape.repository{
+package CustomTriangleRepository <<Rectangle>>{
+interface CustomTriangleRepository{
+
+~ void add (CustomTriangle triangle)
+~ boolean remove (CustomTriangle figure)
+~ void clear ()
+~ CustomTriangle get (int index)
+~ CustomTriangle set (int index,CustomTriangle figure)
+~ List<CustomTriangle> query (FindSpecification specification)
+~ List<CustomTriangle> sort (Comparator<CustomTriangle> comparator)
+
+}
+}
+}
+package org.epam.shape.repository.impl{
+package CustomTriangleRepositoryImpl <<Rectangle>>{
+class CustomTriangleRepositoryImpl{
+- static final CustomTriangleRepository instance
+- final List<CustomTriangle> listOfTriangles
+
+- CustomTriangleRepositoryImpl ()
++ static CustomTriangleRepository getInstance ()
++ List<CustomTriangle> getListOfTriangles ()
++ void add (CustomTriangle triangle)
++ boolean remove (CustomTriangle triangle)
++ void clear ()
++ CustomTriangle get (int index)
++ CustomTriangle set (int index,CustomTriangle triangle)
++ List<CustomTriangle> query (FindSpecification specification)
++ List<CustomTriangle> sort (Comparator<CustomTriangle> comparator)
+
+}
+}
+}
+package org.epam.shape.service{
+package CustomTriangleService <<Rectangle>>{
+class CustomTriangleService{
+- static final Logger LOGGER
+
++ double getTrianglePerimeter (CustomTriangle triangle)
++ double getTriangleArea (CustomTriangle triangle)
++ boolean isTriangle (CustomTriangle triangle)
++ boolean isRectangularTriangle (CustomTriangle triangle)
++ boolean isIsoscelesTriangle (CustomTriangle triangle)
++ boolean isEquilateralTriangle (CustomTriangle triangle)
++ boolean isAcuteAngleTriangle (CustomTriangle triangle)
++ boolean isObtuseTriangle (CustomTriangle triangle)
+- double getSegmentLength (CustomPoint firstPoint,CustomPoint secondPoint)
+
+}
+}
+}
+package org.epam.shape.specification.find{
+package FindSpecification <<Rectangle>>{
+interface FindSpecification{
+
+~ boolean specified (CustomTriangle triangle)
+
+}
+}
+}
+package org.epam.shape.specification.find.impl{
+package FindSpecificationByArea <<Rectangle>>{
+class FindSpecificationByArea{
+- static Logger LOGGER
+~ double minimalArea
+~ double maximalArea
+
++ FindSpecificationByArea (double minimalArea,double maximalArea)
++ boolean specified (CustomTriangle triangle)
+
+}
+}
+}
+package org.epam.shape.specification.find.impl{
+package FindSpecificationById <<Rectangle>>{
+class FindSpecificationById{
+- static final Logger LOGGER
+~ long id
+
++ FindSpecificationById (long id)
++ boolean specified (CustomTriangle triangle)
+
+}
+}
+}
+package org.epam.shape.specification.find.impl{
+package FindSpecificationByPerimeter <<Rectangle>>{
+class FindSpecificationByPerimeter{
+- static Logger LOGGER
+~ double minimalPerimeter
+~ double maximalPerimeter
+
++ FindSpecificationByPerimeter (double minPerimeter,double maxPerimeter)
++ boolean specified (CustomTriangle triangle)
+
+}
+}
+}
+package org.epam.shape.specification.sort{
+package SortSpecificationByArea <<Rectangle>>{
+class SortSpecificationByArea{
+- static final Logger LOGGER
+
++ int compare (CustomTriangle firstTriangle,CustomTriangle secondTriangle)
+
+}
+}
+}
+package org.epam.shape.specification.sort{
+package SortSpecificationById <<Rectangle>>{
+class SortSpecificationById{
+- static final Logger LOGGER
+
++ int compare (CustomTriangle firstTriangle,CustomTriangle secondTriangle)
+
+}
+}
+}
+package org.epam.shape.specification.sort{
+package SortSpecificationByPerimeter <<Rectangle>>{
+class SortSpecificationByPerimeter{
+- static final Logger LOGGER
+
++ int compare (CustomTriangle firstTriangle,CustomTriangle secondTriangle)
+
+}
+}
+}
+package org.epam.shape.util{
+package IdGenerator <<Rectangle>>{
+class IdGenerator{
+~ long currentId
+
++ static long generateId ()
+
+}
+}
+}
+package org.epam.shape.validator{
+package CustomTriangleValidator <<Rectangle>>{
+class CustomTriangleValidator{
+- static final Logger LOGGER
+- static final String SEPARATOR
+
++ static boolean isDoubleValue (String value)
++ static boolean isListCorrect (List<String> listOfStrings)
++ static boolean isDoublesValues (String line)
+
+}
+}
+}
+package org.epam.shape.warehouse{
+package CustomTriangleWarehouse <<Rectangle>>{
+class CustomTriangleWarehouse{
+- static final Logger LOGGER
+- static final CustomTriangleWarehouse instance
+- final Map<Long,CustomTriangleProperties> trianglePropertiesMap
+
++ static CustomTriangleWarehouse getInstance ()
++ void setProperty (long id,CustomTriangleProperties newProperties)
++ CustomTriangleProperties getProperty (long id)
++ void updateProperties (long id,CustomTriangleProperties newProperties)
+
+}
+}
+}
+Cloneable --> CustomPoint : implements↑
+CustomTriangleObservable --> CustomTriangle : implements↑
+Exception --> CustomException : extends↑
+EventObject --> CustomTriangleEvent : extends↑
+CustomTriangleObserver --> CustomTriangleObserverImpl : implements↑
+CustomTriangleRepository --> CustomTriangleRepositoryImpl : implements↑
+FindSpecification --> FindSpecificationByArea : implements↑
+FindSpecification --> FindSpecificationById : implements↑
+FindSpecification --> FindSpecificationByPerimeter : implements↑
+Comparator --> SortSpecificationByArea : implements↑
+Comparator --> SortSpecificationById : implements↑
+Comparator --> SortSpecificationByPerimeter : implements↑
+
+@enduml

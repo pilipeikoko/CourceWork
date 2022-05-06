@@ -1,6 +1,7 @@
 package com.bsuir.classdiagram.service;
 
 import com.bsuir.classdiagram.model.CustomStructure;
+import com.bsuir.classdiagram.util.FileUtility;
 import com.bsuir.classdiagram.util.parser.JavaParser;
 
 import java.io.IOException;
@@ -12,6 +13,11 @@ public class JavaService {
         ParserService<JavaParser> service = new JavaParserService();
 
         List<CustomStructure> structures = service.parse(projectDir);
-        //TODO: add converter to puml
+
+        JavaUml javaUml = new JavaUml();
+        String uml = javaUml.parse(structures);
+
+        FileUtility utility = new FileUtility();
+        utility.write(uml);
     }
 }
