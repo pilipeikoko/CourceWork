@@ -26,7 +26,7 @@ public class JavaCustomStructure extends CustomStructure {
         ));
     }
 
-    public void addKlass(List<CustomModifier> customModifiers, String type, String className, List<CustomType> customTypes) {
+    public void addCustomClass(List<CustomModifier> customModifiers, String type, String className, List<CustomType> customTypes) {
         if (Objects.isNull(customClasses)) {
             this.customClasses = new ArrayList<>();
         }
