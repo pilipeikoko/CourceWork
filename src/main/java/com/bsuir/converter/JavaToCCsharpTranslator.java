@@ -13,8 +13,7 @@ import java.io.InputStream;
 
 import static com.bsuir.classdiagram.util.UmlGeneratorConstants.CODE_SAVE_PATH;
 
-public class JavaToCTranslator {
-
+public class JavaToCCsharpTranslator {
     public static void translate(String location) throws Exception {
         FileUtility fileUtility = new FileUtility();
         InputStream in = new FileInputStream(location);
@@ -27,8 +26,7 @@ public class JavaToCTranslator {
         ClassVisitor classVisitor = new ClassVisitor(parser);
         classVisitor.visit(parser.compilation());
         com.bsuir.converter.model.Class traverseResult = classVisitor.getReturnClass();
-
         Output output = new Output(traverseResult, fileUtility);
-        output.printToC(CODE_SAVE_PATH + "/" + location.substring(location.lastIndexOf("\\") + 1));
+        output.printToCSharp(CODE_SAVE_PATH + "/" + location.substring(location.lastIndexOf("\\") + 1));
     }
 }

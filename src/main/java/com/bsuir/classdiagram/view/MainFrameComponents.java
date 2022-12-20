@@ -1,5 +1,7 @@
 package com.bsuir.classdiagram.view;
 
+import com.bsuir.classdiagram.service.JavaService;
+import com.bsuir.converter.JavaToCCsharpTranslator;
 import com.bsuir.converter.JavaToCTranslator;
 
 import javax.swing.*;
@@ -10,6 +12,7 @@ import javax.swing.plaf.multi.MultiComboBoxUI;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.IOException;
 
 public class MainFrameComponents {
     private final JPanel panel;
@@ -22,8 +25,8 @@ public class MainFrameComponents {
     private final JLabel targetLanguageLabel;
     private final JButton translateButton;
 
-    private final String[] sourceLanguages = new String[]{"C#", "Java"};
-    private final String[] targetLanguages = new String[]{"C#", "C"};
+    private final String[] sourceLanguages = new String[]{"Java", "C#"};
+    private final String[] targetLanguages = new String[]{"C", "C#", "UML"};
 
     public MainFrameComponents() {
 
@@ -45,6 +48,7 @@ public class MainFrameComponents {
                 JFileChooser fileChooser = new JFileChooser();
                 fileChooser.setDialogTitle("Open file or folder with code");
                 fileChooser.setApproveButtonText("Open");
+                fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
                 fileChooser.showOpenDialog(null);
                 fileLocationTextField.setText(fileChooser.getSelectedFile().getPath());
             }
@@ -130,9 +134,18 @@ public class MainFrameComponents {
                         ex.printStackTrace();
                     }
                 } else if (sourceLanguage.equals("Java") && targetLanguage.equals("C#")) {
-
+                    try {
+                        JavaToCCsharpTranslator.translate(path);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                 } else if (sourceLanguage.equals("Java") && targetLanguage.equals("UML")) {
-
+                    JavaService service = new JavaService();
+                    try {
+                        service.parse(path);
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
         });

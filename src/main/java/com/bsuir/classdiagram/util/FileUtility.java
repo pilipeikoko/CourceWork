@@ -1,6 +1,5 @@
 package com.bsuir.classdiagram.util;
 
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +34,35 @@ public class FileUtility {
         BufferedWriter bufferedWriter;
         try {
             File distFile = new File(UML_SAVE_PATH);
+            if (!distFile.getParentFile().exists()) distFile.getParentFile().mkdirs();
+            bufferedReader = new BufferedReader(new StringReader(res));
+            bufferedWriter = new BufferedWriter(new FileWriter(distFile));
+            char[] buf = new char[1024];
+            int len;
+            while ((len = bufferedReader.read(buf)) != -1) {
+                bufferedWriter.write(buf, 0, len);
+            }
+            bufferedWriter.flush();
+            bufferedReader.close();
+            bufferedWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (bufferedReader != null) {
+                try {
+                    bufferedReader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public void write(String res, String fileLocation) {
+        BufferedReader bufferedReader = null;
+        BufferedWriter bufferedWriter;
+        try {
+            File distFile = new File(fileLocation);
             if (!distFile.getParentFile().exists()) distFile.getParentFile().mkdirs();
             bufferedReader = new BufferedReader(new StringReader(res));
             bufferedWriter = new BufferedWriter(new FileWriter(distFile));

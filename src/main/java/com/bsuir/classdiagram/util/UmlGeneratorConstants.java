@@ -2,6 +2,7 @@ package com.bsuir.classdiagram.util;
 
 public class UmlGeneratorConstants {
     public final static String UML_SAVE_PATH = System.getProperty("user.dir")+"/uml_code_text.txt";
+    public final static String CODE_SAVE_PATH = System.getProperty("user.dir");
 
     public final static String START_TOKEN = "@startuml\n!pragma layout smetana\n";
     public final static String DEFAULT_STYLE_TOKEN = "skinparam Rectangle{\n" +
