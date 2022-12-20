@@ -2,6 +2,7 @@ package com.bsuir.classdiagram.service;
 
 import com.bsuir.classdiagram.model.*;
 import com.bsuir.classdiagram.util.FileUtility;
+import com.bsuir.classdiagram.util.mapper.ModifierMapper;
 import net.sourceforge.plantuml.SourceFileReader;
 
 import java.io.File;
@@ -14,11 +15,12 @@ import java.util.stream.Collectors;
 import static com.bsuir.classdiagram.util.UmlGeneratorConstants.*;
 import static java.util.stream.Collectors.joining;
 
-class JavaUml {
-    private List<JavaCustomStructure> structures;
+public class ConvertToUml {
+    private List<CompilationUnit> structures;
+    private ModifierMapper modifierMapper;
 
-    public JavaUml() {
-
+    public ConvertToUml(ModifierMapper modifierMapper) {
+        this.modifierMapper = modifierMapper;
     }
 
     public String parse(List<CustomStructure> structures) throws IOException {
@@ -41,7 +43,7 @@ class JavaUml {
         return umlResult;
     }
 
-    private String startLines(){
+    private String startLines() {
         return START_TOKEN +
                 DEFAULT_STYLE_TOKEN +
                 NEW_LINE;
@@ -49,8 +51,8 @@ class JavaUml {
 
     private void init(List<CustomStructure> structures) {
         this.structures = structures.stream().map(item ->
-                        (JavaCustomStructure) item)
-                .filter(item -> !Objects.equals(item.getCustomClass().getType(), ANNOTATION_TOKEN))
+                        (CompilationUnit) item)
+                .filter(item -> item.getCustomClass() != null &&  !Objects.equals(item.getCustomClass().getType(), ANNOTATION_TOKEN))
                 .collect(Collectors.toList());
     }
 
@@ -177,7 +179,7 @@ class JavaUml {
     private String modifierTokens(List<CustomModifier> modifiers) {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < modifiers.size(); ++i) {
-            String text = modifiers.get(i).getText();
+            String text = modifierMapper.Map(modifiers.get(i).getModifier());
             if (i == 0) {
                 result.append(modifierIcon(text))
                         .append(SPACE_TOKEN);

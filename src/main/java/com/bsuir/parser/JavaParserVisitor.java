@@ -1,4 +1,4 @@
-package com.bsuir.classdiagram.util.parser;
+package com.bsuir.parser;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**

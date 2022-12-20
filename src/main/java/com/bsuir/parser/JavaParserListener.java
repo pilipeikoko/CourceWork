@@ -1,5 +1,5 @@
 // Generated from C:/Users/pilip/Downloads/Lab_1/code-2-uml/src/main/java/com/util/parser\JavaParser.g4 by ANTLR 4.9.2
-package com.bsuir.classdiagram.util.parser;
+package com.bsuir.parser;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**

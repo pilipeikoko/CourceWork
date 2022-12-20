@@ -1,17 +1,17 @@
 package com.bsuir.classdiagram.model;
 
 public class CustomModifier {
-    private final String text;
+    private final TypeModifier modifier;
 
-    private CustomModifier(String text) {
-        this.text = text;
+    private CustomModifier(TypeModifier text) {
+        this.modifier = text;
     }
 
-    public static CustomModifier of(String text) {
+    public static CustomModifier of(TypeModifier text) {
         return new CustomModifier(text);
     }
 
-    public String getText() {
-        return text;
+    public TypeModifier getModifier() {
+        return modifier;
     }
 }

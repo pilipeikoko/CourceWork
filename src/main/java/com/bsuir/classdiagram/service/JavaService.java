@@ -2,7 +2,8 @@ package com.bsuir.classdiagram.service;
 
 import com.bsuir.classdiagram.model.CustomStructure;
 import com.bsuir.classdiagram.util.FileUtility;
-import com.bsuir.classdiagram.util.parser.JavaParser;
+import com.bsuir.classdiagram.util.mapper.JavaModifierMapper;
+import com.bsuir.parser.JavaParser;
 
 import java.io.IOException;
 import java.util.List;
@@ -10,11 +11,13 @@ import java.util.List;
 public class JavaService {
 
     public void parse(String projectDir) throws IOException {
-        ParserService<JavaParser> service = new JavaParserService();
+        var fileUtility = new FileUtility();
+        var modifierMapper = new JavaModifierMapper();
+        ParserService<JavaParser> service = new JavaParserService(fileUtility, modifierMapper);
 
         List<CustomStructure> structures = service.parse(projectDir);
 
-        JavaUml javaUml = new JavaUml();
+        ConvertToUml javaUml = new ConvertToUml(modifierMapper);
         String uml = javaUml.parse(structures);
 
         FileUtility utility = new FileUtility();

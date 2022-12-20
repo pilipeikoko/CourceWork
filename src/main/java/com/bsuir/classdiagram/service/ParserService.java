@@ -1,7 +1,8 @@
 package com.bsuir.classdiagram.service;
 
 import com.bsuir.classdiagram.model.CustomStructure;
-import com.bsuir.classdiagram.util.FileUtil;
+import com.bsuir.classdiagram.util.FileUtility;
+import com.bsuir.classdiagram.util.mapper.ModifierMapper;
 import org.antlr.v4.runtime.*;
 
 import java.io.File;
@@ -12,6 +13,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public abstract class ParserService<T extends Parser> {
+    protected final FileUtility fileUtility;
+    protected final ModifierMapper modifierMapper;
 
     protected abstract String getExtension();
 
@@ -20,6 +23,11 @@ public abstract class ParserService<T extends Parser> {
     protected abstract Lexer createLexer(CharStream stream);
 
     protected abstract T createParser(CommonTokenStream stream);
+
+    protected ParserService(FileUtility fileUtility, ModifierMapper modifierMapper) {
+        this.fileUtility = fileUtility;
+        this.modifierMapper = modifierMapper;
+    }
 
     protected List<T> toParses(List<String> filePaths) throws IOException {
         List<T> results = new ArrayList<>();
@@ -35,7 +43,7 @@ public abstract class ParserService<T extends Parser> {
     }
 
     public List<CustomStructure> parse(String projectDir) throws IOException {
-        List<String> filePaths = FileUtil.findFilesPathBy(new File(projectDir));
+        List<String> filePaths = fileUtility.findFilesPathBy(new File(projectDir));
         filePaths = filePaths.stream().filter(item -> item.endsWith(getExtension()))
                 .collect(Collectors.toList());
         List<T> parsers = toParses(filePaths);

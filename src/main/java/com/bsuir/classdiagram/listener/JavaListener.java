@@ -1,7 +1,8 @@
 package com.bsuir.classdiagram.listener;
 
 import com.bsuir.classdiagram.model.*;
-import com.bsuir.classdiagram.util.parser.JavaParser;
+import com.bsuir.classdiagram.util.mapper.ModifierMapper;
+import com.bsuir.parser.JavaParser;
 import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -13,13 +14,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.bsuir.classdiagram.util.Constant.*;
+import static com.bsuir.classdiagram.util.UmlGeneratorConstants.*;
 
 public class JavaListener extends ParserListener {
     private final JavaParser parser;
 
-    public JavaListener(CustomStructure customStructure, JavaParser parser) {
-        super(customStructure);
+    public JavaListener(CustomStructure customStructure, JavaParser parser, ModifierMapper modifierMapper) {
+        super(customStructure, modifierMapper);
         this.parser = parser;
     }
 
@@ -40,14 +41,36 @@ public class JavaListener extends ParserListener {
         List<CustomModifier> customModifiers = parseClassModifiers(ctx);
         ParseTree classContext = ctx.getChild(customModifiers.size());
         String className = classContext.getChild(1).getText();
+        String type = getCurrentType(classContext);
         List<CustomType> customTypes = parseClassTypes(classContext);
-        getJavaStructure()
-                .addCustomClass(
-                        customModifiers,
-                        getCurrentType(classContext),
-                        className,
-                        customTypes
-                );
+        if (type.equals("class") || type.equals("interface")) {
+            getJavaStructure()
+                    .addCustomClass(
+                            customModifiers,
+                            type,
+                            className,
+                            customTypes
+                    );
+        }
+        else if (type.equals("enum")){
+            getJavaStructure().addCustomEnum(customModifiers, type, className, getEnumMembers(classContext));
+        }
+    }
+
+    private List<String> getEnumMembers(ParseTree classContext) {
+        var values = new ArrayList<String>();
+        for(int i=0;i<classContext.getChildCount();++i){
+            var child = classContext.getChild(i);
+
+            if(child instanceof JavaParser.EnumConstantsContext){
+                for(int j =0;j<child.getChildCount();++j){
+                    var enumValue = child.getChild(j);
+                    if(enumValue instanceof JavaParser.EnumConstantContext)
+                        values.add(enumValue.getText());
+                }
+            }
+        }
+        return values;
     }
 
     private String getCurrentType(ParseTree classContext) {
@@ -56,6 +79,9 @@ public class JavaListener extends ParserListener {
         }
         if (classContext instanceof JavaParser.InterfaceDeclarationContext) {
             return INTERFACE_TOKEN;
+        }
+        if (classContext instanceof JavaParser.EnumDeclarationContext) {
+            return ENUM_TOKEN;
         }
         return ANNOTATION_TOKEN;
     }
@@ -68,8 +94,14 @@ public class JavaListener extends ParserListener {
     }
 
     @Override
+    public void enterEnumBodyDeclarations(JavaParser.EnumBodyDeclarationsContext ctx) {
+        super.enterEnumBodyDeclarations(ctx);
+    }
+
+
+    @Override
     public void enterClassBodyDeclaration(JavaParser.ClassBodyDeclarationContext ctx) {
-        if (isFiledContext(ctx)) {
+        if (isFieldContext(ctx)) {
             getJavaStructure()
                     .getCustomClass()
                     .addField(parseField(ctx));
@@ -108,12 +140,43 @@ public class JavaListener extends ParserListener {
         } else {
             methodName = methodContext.getChild(1).getText();
         }
+        if(methodName.equals("addField")){
+            var methodBodyContext = find(((RuleContext) methodContext).getRuleContext(), "//methodBody").stream().findFirst();
+            if(methodBodyContext.isPresent()){
+                var blockContext = find((RuleContext) methodBodyContext.get(), "//block").stream().findFirst();
+                if(blockContext.isPresent()){
+                    var statementContextes = find((RuleContext) blockContext.get(), "//blockStatement");
+                    for (var statement : statementContextes) {
+                        for (int i = 0; i < statement.getChildCount(); i++) {
+                            var statementChild = statement.getChild(i);
+                            if(statementChild instanceof JavaParser.LocalVariableDeclarationContext){
+                                // int a;
+                            }
+                        }
+
+                    }
+                }
+            }
+
+        }
         return CustomMethod.of(isConstructor, customModifiers, methodName, params);
+    }
+
+    private CustomVariable parseVariable(JavaParser.LocalVariableDeclarationContext ctx){
+        return new CustomVariable();
     }
 
     private CustomField parseField(JavaParser.ClassBodyDeclarationContext ctx) {
         List<CustomModifier> customModifiers = findModifiers(ctx).stream()
-                .filter(modifier -> !modifier.getText().startsWith("@"))
+                .filter(modifier -> !modifierMapper.Map(modifier.getModifier()).startsWith("@"))
+                .collect(Collectors.toList());
+        String fieldName = find(ctx, "//variableDeclaratorId").iterator().next().getText();
+        return CustomField.of(customModifiers, fieldName);
+    }
+
+    private CustomField parseExpression(JavaParser.ExpressionContext ctx) {
+        List<CustomModifier> customModifiers = findModifiers(ctx).stream()
+                .filter(modifier -> !modifierMapper.Map(modifier.getModifier()).startsWith("@"))
                 .collect(Collectors.toList());
         String fieldName = find(ctx, "//variableDeclaratorId").iterator().next().getText();
         return CustomField.of(customModifiers, fieldName);
@@ -121,17 +184,17 @@ public class JavaListener extends ParserListener {
 
     private List<CustomModifier> findModifiers(RuleContext ctx) {
         List<CustomModifier> classOrInterfaceCustomModifiers = find(ctx, "//classOrInterfaceModifier").stream()
-                .map(context -> CustomModifier.of(context.getText()))
+                .map(context -> CustomModifier.of(modifierMapper.Map(context.getText())))
                 .collect(Collectors.toList());
 
         List<CustomModifier> classOrInterfaceTypes = find(ctx, "//classOrInterfaceType").stream()
-                .map(context -> CustomModifier.of(context.getText())).collect(Collectors.toList());
+                .map(context -> CustomModifier.of(modifierMapper.Map(context.getText()))).collect(Collectors.toList());
         if (!classOrInterfaceTypes.isEmpty()) {
             classOrInterfaceCustomModifiers.add(classOrInterfaceTypes.get(0));
             return classOrInterfaceCustomModifiers;
         }
         List<CustomModifier> basicTypes = find(ctx, "//typeType").stream()
-                .map(context -> CustomModifier.of(context.getText())).collect(Collectors.toList());
+                .map(context -> CustomModifier.of(modifierMapper.Map(context.getText()))).collect(Collectors.toList());
         if (!basicTypes.isEmpty()) {
             classOrInterfaceCustomModifiers.add(basicTypes.get(0));
             return basicTypes;
@@ -149,7 +212,7 @@ public class JavaListener extends ParserListener {
         return !(methods.isEmpty() && constructors.isEmpty());
     }
 
-    private boolean isFiledContext(JavaParser.ClassBodyDeclarationContext ctx) {
+    private boolean isFieldContext(JavaParser.ClassBodyDeclarationContext ctx) {
         Collection<ParseTree> matches = find(ctx, "//*/memberDeclaration/fieldDeclaration");
         return !matches.isEmpty();
     }
@@ -181,7 +244,7 @@ public class JavaListener extends ParserListener {
         for (int i = 0; i < ctx.getChildCount(); ++i) {
             ParseTree child = ctx.getChild(i);
             if (child instanceof JavaParser.ClassOrInterfaceModifierContext) {
-                result.add(CustomModifier.of(child.getText()));
+                result.add(CustomModifier.of(modifierMapper.Map(child.getText())));
             }
         }
         return result;
@@ -195,7 +258,7 @@ public class JavaListener extends ParserListener {
             if (isAnnotation) continue;
 
             if (child instanceof JavaParser.ModifierContext) {
-                result.add(CustomModifier.of(child.getText()));
+                result.add(CustomModifier.of(modifierMapper.Map(child.getText())));
             }
             if ((child instanceof JavaParser.MemberDeclarationContext
                     ||
@@ -203,14 +266,14 @@ public class JavaListener extends ParserListener {
             )
                     &&
                     !isConstructor) {
-                result.add(CustomModifier.of(child.getChild(0).getChild(0).getText()));
+                result.add(CustomModifier.of(modifierMapper.Map(child.getChild(0).getChild(0).getText())));
             }
         }
         return result;
     }
 
-    private JavaCustomStructure getJavaStructure() {
-        return (JavaCustomStructure) getStructure();
+    private CompilationUnit getJavaStructure() {
+        return (CompilationUnit) getStructure();
     }
 
     private String textOf(RuleContext context) {

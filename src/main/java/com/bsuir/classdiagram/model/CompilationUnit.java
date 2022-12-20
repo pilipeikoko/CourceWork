@@ -1,13 +1,15 @@
 package com.bsuir.classdiagram.model;
 
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.List;
 import java.util.Objects;
 
-public class JavaCustomStructure extends CustomStructure {
+public class CompilationUnit extends CustomStructure {
     private CustomPackage customPackage;
     private List<CustomImport> customImports;
     private List<CustomClass> customClasses;
+    private List<CustomEnum> customEnums;
 
     public void updatePackageName(String packageName) {
         if (Objects.nonNull(packageName)) {
@@ -35,9 +37,18 @@ public class JavaCustomStructure extends CustomStructure {
         );
     }
 
+    public void addCustomEnum(List<CustomModifier> customModifiers, String type, String className, List<String> values) {
+        if (Objects.isNull(customEnums)) {
+            this.customEnums = new ArrayList<>();
+        }
+        this.customEnums.add(
+                new CustomEnum(customModifiers, type, className, values)
+        );
+    }
+
     public CustomClass getCustomClass() {
         if (Objects.isNull(customClasses) || customClasses.isEmpty()) {
-
+            return null;
         }
         return this.customClasses.get(customClasses.size() - 1);
     }

@@ -17,6 +17,7 @@ public class UmlGeneratorConstants {
     public final static String ANNOTATION_TOKEN = "annotation";
     public final static String INTERFACE_TOKEN = "interface";
     public final static String CLASS_TOKEN = "class";
+    public final static String ENUM_TOKEN = "enum";
     public final static String WRAP_CLASS_STYLE_TOKEN = "Rectangle";
 
 }

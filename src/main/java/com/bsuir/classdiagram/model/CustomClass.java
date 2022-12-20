@@ -20,6 +20,14 @@ public class CustomClass {
     }
 
     public void addField(CustomField customField) {
+        int a;
+        int b = 2;
+        if(1 == b){
+            b=2;
+        }
+        while (1 == b){
+            b=2;
+        }
         if (Objects.isNull(customFields)) {
             customFields = new ArrayList<>();
         }

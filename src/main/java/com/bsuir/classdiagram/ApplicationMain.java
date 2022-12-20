@@ -2,6 +2,7 @@ package com.bsuir.classdiagram;
 
 import com.bsuir.classdiagram.model.Params;
 import com.bsuir.classdiagram.service.JavaService;
+import com.bsuir.classdiagram.view.MainFrame;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -11,9 +12,10 @@ import java.util.Optional;
 
 public class ApplicationMain {
     public static void main(String[] args) throws IOException, IllegalAccessException {
-        parse(args);
-        JavaService javaService = new JavaService();
-        javaService.parse(Params.getScanPath());
+        new MainFrame();
+//        parse(args);
+//        JavaService javaService = new JavaService();
+//        javaService.parse(Params.getScanPath());
     }
 
     private static void parse(String[] args) throws IllegalAccessException {
